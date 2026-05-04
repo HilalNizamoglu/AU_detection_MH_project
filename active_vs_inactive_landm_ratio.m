@@ -11,12 +11,14 @@ load([path 'AU_landm_mapping.mat'])
 %% 
 for av=1:length(MHs)
     for anim=1:length(animations)
-        landm_data=motion_params(av).videos(anim).normed_coord_eucl_dif_mat;
-        landm_all_idx=[1:size(landm_data,1)];
+        landm_data=motion_params(av).videos(anim).coord_eucl_dif';
+        mean_scaled_data=landm_data/mean(landm_data(:));
+        landm_all_idx=[1:size(mean_scaled_data,1)];
         landm_target_idx=AU_landm_mapping{anim,3};
         landm_other_idx=setdiff(landm_all_idx,landm_target_idx);
-        target_landm_data=landm_data(landm_target_idx,:);
-        other_landm_data=landm_data(landm_other_idx,:);
+
+        target_landm_data=mean_scaled_data(landm_target_idx,:);
+        other_landm_data=mean_scaled_data(landm_other_idx,:);
         output.actv_landm_displ_data(av).(animations{anim})=target_landm_data;
         output.inactv_landm_displ_data(av).(animations{anim})=other_landm_data;
         if anim < 12
