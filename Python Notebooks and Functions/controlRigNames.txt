@@ -1,0 +1,35 @@
+AU01	inner_brow_raiser	CTRL_L_brow_raiseIn	CTRL_R_brow_raiseIn
+
+AU02	outer_brow_raiser	CTRL_L_brow_raiseOut	CTRL_R_brow_raiseOut
+
+AU04	brow_lowerer	CTRL_L_brow_down	CTRL_R_brow_down
+
+AU06	cheek_raiser	CTRL_L_eye_cheekRaise	CTRL_R_eye_cheekRaise
+
+AU07	lid_tightener	CTRL_L_eye_squintInner	CTRL_R_eye_squintInner
+
+AU10	upper_lip_raiser	CTRL_L_mouth_upperLipRaise	CTRL_R_mouth_upperLipRaise
+
+AU12	lip_corner_puller	CTRL_L_mouth_cornerPull	CTRL_R_mouth_cornerPull
+
+AU14	dimpler	CTRL_L_mouth_dimple	CTRL_R_mouth_dimple
+
+AU15	lip_corner_depressor	CTRL_L_mouth_cornerDepress	CTRL_R_mouth_cornerDepress
+
+AU17	chin_raiser	CTRL_L_jaw_ChinRaiseD	CTRL_R_jaw_ChinRaiseD
+
+AU23	lip_tightener	CTRL_L_mouth_tightenD	CTRL_R_mouth_tightenD	CTRL_L_mouth_tightenU	CTRL_R_mouth_tightenU
+
+browsAll	CTRL_L_brow_raiseIn	CTRL_R_brow_raiseIn	CTRL_L_brow_raiseOut	CTRL_R_brow_raiseOut	CTRL_L_brow_down	CTRL_R_brow_down	
+
+browsAU10
+
+browsAU12
+
+browsAU14
+
+browsAU15
+
+browsAU17
+
+browsAU23
