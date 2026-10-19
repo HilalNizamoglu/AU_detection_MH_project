@@ -224,3 +224,262 @@ for id=1:length(MHs)
 end
 cd([main_path '\Analyses\Inverse_affine_transform'])
 save OFresults OFresults
+
+%% Create motion_params.mat
+
+%% Motion parameters: rotation mat vectorized, translation, landm_eucld
+rot_vect_arr=[]; trans_vect_arr=[]; max_rot_arr=[]; max_trans_arr=[];
+max_x_pos_arr=[]; max_x_neg_arr=[]; max_x_dir_arr=[]; 
+max_y_pos_arr=[]; max_y_neg_arr=[]; max_y_dir_arr=[]; 
+max_z_pos_arr=[]; max_z_neg_arr=[]; max_z_dir_arr=[]; 
+max_coord_eucl_dif_arr=[];
+for id=1:length(MHs)
+    curID=MHs{id};
+    motion_params(id).avatar=curID;
+    % Reading csv file of OpenFace output
+    OF_out_path= [main_path '\' curID '\OpenFace_output\'];
+    motion_params(id).OF_csv_path=OF_out_path;
+    for exp=1:length(animations)
+        curExp=animations{exp};
+        motion_params(id).videos(exp).curExp=curExp;
+        motion_params(id).videos(exp).avatar=curID;
+
+        all_frames=OFresults(id).landmarks(exp).frames;
+        blank=zeros(length(all_frames),51);
+        x_pos=blank; y_pos=blank; z_pos=blank; x_neg=blank; y_neg=blank; z_neg=blank;
+        x_dir=blank; y_dir=blank; z_dir=blank; coord_eucl_dif=blank;
+        for fr=1:length(all_frames)
+            rot_vect=all_frames(fr).rot_comb(:);  %9x1 vector
+            trans=all_frames(fr).translation-all_frames(1).translation;  %3x1 vector
+            rot_vect_arr=[rot_vect_arr rot_vect];
+            trans_vect_arr=[trans_vect_arr trans];
+            for landm= 1:length(all_frames(fr).corrected_marker) %iterate over 51 landmarks
+                x_dif=all_frames(fr).corrected_marker(1,landm)-all_frames(1).corrected_marker(1,landm); %difference from the initial frame
+                x_dir(fr,landm)=x_dif;
+                if x_dif >=0
+                    x_pos(fr,landm)=abs(x_dif);
+                else
+                    x_neg(fr,landm)=abs(x_dif);
+                end
+                y_dif=all_frames(fr).corrected_marker(2,landm)-all_frames(1).corrected_marker(2,landm); 
+                y_dir(fr,landm)=y_dif;
+                if y_dif >=0
+                    y_pos(fr,landm)=abs(y_dif);
+                else 
+                    y_neg(fr,landm)=abs(y_dif);
+                end
+                z_dif=all_frames(fr).corrected_marker(3,landm)-all_frames(1).corrected_marker(3,landm);
+                z_dir(fr,landm)=z_dif;
+                if z_dif >=0
+                    z_pos(fr,landm)=abs(z_dif);
+                else
+                    z_neg(fr,landm)=abs(z_dif);
+                end
+                coord_dif(fr,landm,:)=[x_dif; y_dif; z_dif];
+                coord_eucl_dif(fr,landm)=sqrt(x_dif.^2 + y_dif.^2 + z_dif.^2);
+                x_dif=[]; y_dif=[]; z_dif=[];
+            end
+        end
+        motion_params(id).videos(exp).rot_vect=rot_vect_arr;
+        motion_params(id).videos(exp).trans_vect=trans_vect_arr;
+        maxs_rot=max(rot_vect_arr');
+        motion_params(id).videos(exp).max_rot=maxs_rot;
+        maxs_trans=max(trans_vect_arr');
+        motion_params(id).videos(exp).max_trans=maxs_trans;
+        rot_vect_arr=[]; trans_vect_arr=[]; maxs_rot=[]; maxs_trans=[];
+        max_rot_arr=[max_rot_arr; motion_params(id).videos(exp).max_rot];
+        max_trans_arr=[max_trans_arr; motion_params(id).videos(exp).max_trans];
+        
+        motion_params(id).videos(exp).x_pos= x_pos;
+        motion_params(id).videos(exp).x_neg= x_neg;
+        motion_params(id).videos(exp).x_dir= x_dir;
+        motion_params(id).videos(exp).y_pos= y_pos;
+        motion_params(id).videos(exp).y_neg= y_neg;
+        motion_params(id).videos(exp).y_dir= y_dir;
+        motion_params(id).videos(exp).z_pos= z_pos;
+        motion_params(id).videos(exp).z_neg= z_neg;
+        motion_params(id).videos(exp).z_dir= z_dir;
+        motion_params(id).videos(exp).coord_eucl_dif=coord_eucl_dif; 
+        motion_params(id).videos(exp).coord_dif=coord_dif; coord_dif=[];
+
+        maxs_x_pos=max(x_pos);
+        motion_params(id).videos(exp).x_pos_max= maxs_x_pos;
+        maxs_x_pos=[]; x_pos=[];
+        max_x_pos_arr=[max_x_pos_arr; motion_params(id).videos(exp).x_pos_max]; 
+
+        maxs_x_neg=max(x_neg); 
+        motion_params(id).videos(exp).x_neg_max= maxs_x_neg;
+        maxs_x_neg=[]; x_neg=[];
+        max_x_neg_arr=[max_x_neg_arr; motion_params(id).videos(exp).x_neg_max];
+
+        maxs_x_dir=max(x_dir); 
+        motion_params(id).videos(exp).x_dir_max= maxs_x_dir;
+        maxs_x_dir=[]; x_dir=[];
+        max_x_dir_arr=[max_x_dir_arr; motion_params(id).videos(exp).x_dir_max];
+
+        maxs_y_pos=max(y_pos);
+        motion_params(id).videos(exp).y_pos_max= maxs_y_pos;
+        maxs_y_pos=[]; y_pos=[];
+        max_y_pos_arr=[max_y_pos_arr; motion_params(id).videos(exp).y_pos_max];
+
+        maxs_y_neg=max(y_neg); 
+        motion_params(id).videos(exp).y_neg_max= maxs_y_neg;
+        maxs_y_neg=[]; y_neg=[];
+        max_y_neg_arr=[max_y_neg_arr; motion_params(id).videos(exp).y_neg_max];
+
+        maxs_y_dir=max(y_dir); 
+        motion_params(id).videos(exp).y_dir_max= maxs_y_dir;
+        maxs_y_dir=[]; y_dir=[];
+        max_y_dir_arr=[max_y_dir_arr; motion_params(id).videos(exp).y_dir_max];
+
+        maxs_z_pos=max(z_pos); 
+        motion_params(id).videos(exp).z_pos_max= maxs_z_pos;
+        maxs_z_pos=[]; z_pos=[];
+        max_z_pos_arr=[max_z_pos_arr; motion_params(id).videos(exp).z_pos_max];
+
+        maxs_z_neg=max(z_neg); 
+        motion_params(id).videos(exp).z_neg_max= maxs_z_neg;
+        maxs_z_neg=[]; z_neg=[];
+        max_z_neg_arr=[max_z_neg_arr; motion_params(id).videos(exp).z_neg_max];
+
+        maxs_z_dir=max(z_dir); 
+        motion_params(id).videos(exp).z_dir_max= maxs_z_dir;
+        maxs_z_dir=[]; z_dir=[];
+        max_z_dir_arr=[max_z_dir_arr; motion_params(id).videos(exp).z_dir_max];
+
+        maxs_coord_eucl_dif=max(coord_eucl_dif);
+        motion_params(id).videos(exp).coord_eucl_dif_max= maxs_coord_eucl_dif;
+        maxs_coord_eucl_dif=[]; coord_eucl_dif=[];
+        max_coord_eucl_dif_arr=[max_coord_eucl_dif_arr; motion_params(id).videos(exp).coord_eucl_dif_max]; 
+
+    end
+    motion_params(id).max_rot_arr=max_rot_arr;
+    max_rot=max(max_rot_arr);
+    motion_params(id).max_rot=max_rot;
+    max_rot_arr=[];
+
+    motion_params(id).max_trans_arr=max_trans_arr;
+    max_trans=max(max_trans_arr);
+    motion_params(id).max_trans=max_trans;
+    max_trans_arr=[];
+
+    motion_params(id).max_x_pos_arr=max_x_pos_arr;
+    max_x_pos=max(max_x_pos_arr); max_x_pos_arr=[];
+    motion_params(id).max_x_pos=max_x_pos;
+    motion_params(id).max_x_neg_arr=max_x_neg_arr;
+    max_x_neg=max(max_x_neg_arr); max_x_neg_arr=[];
+    motion_params(id).max_x_neg=max_x_neg;
+    motion_params(id).max_x_dir_arr=max_x_dir_arr;
+    max_x_dir=max(max_x_dir_arr); max_x_dir_arr=[];
+    motion_params(id).max_x_dir=max_x_dir;
+
+    motion_params(id).max_y_pos_arr=max_y_pos_arr;
+    max_y_pos=max(max_y_pos_arr); max_y_pos_arr=[];
+    motion_params(id).max_y_pos=max_y_pos;
+    motion_params(id).max_y_neg_arr=max_y_neg_arr;
+    max_y_neg=max(max_y_neg_arr); max_y_neg_arr=[];
+    motion_params(id).max_y_neg=max_y_neg;
+    motion_params(id).max_y_dir_arr=max_y_dir_arr;
+    max_y_dir=max(max_y_dir_arr); max_y_dir_arr=[];
+    motion_params(id).max_y_dir=max_y_dir;
+
+    motion_params(id).max_z_pos_arr=max_z_pos_arr;
+    max_z_pos=max(max_z_pos_arr); max_z_pos_arr=[];
+    motion_params(id).max_z_pos=max_z_pos;
+    motion_params(id).max_z_neg_arr=max_z_neg_arr;
+    max_z_neg=max(max_z_neg_arr); max_z_neg_arr=[];
+    motion_params(id).max_z_neg=max_z_neg;
+    motion_params(id).max_z_dir_arr=max_z_dir_arr;
+    max_z_dir=max(max_z_dir_arr); max_z_dir_arr=[];
+    motion_params(id).max_z_dir=max_z_dir;
+
+    motion_params(id).max_coord_eucl_dif_arr=max_coord_eucl_dif_arr;
+    max_coord_eucl_dif=max(max_coord_eucl_dif_arr); max_coord_eucl_dif_arr=[];
+    motion_params(id).max_coord_eucl_dif=max_coord_eucl_dif;
+
+    for vid=1:length(motion_params(id).videos)
+        for col=1:length(motion_params(id).max_rot)
+            normed_rot_mat(col,:)=...
+                motion_params(id).videos(vid).rot_vect(col,:)/max_rot(col);
+        end
+        motion_params(id).videos(vid).normed_rot_mat=normed_rot_mat;
+        normed_rot_mat=[];
+
+        for col=1:length(motion_params(id).max_trans)
+            normed_trans_mat(col,:)=...
+                motion_params(id).videos(vid).trans_vect(col,:)/max_trans(col);
+        end
+        motion_params(id).videos(vid).normed_trans_mat=normed_trans_mat;
+        normed_trans_mat=[];
+        for col=1:length(motion_params(id).max_x_pos)
+            normed_x_pos_mat(col,:)=...
+                motion_params(id).videos(vid).x_pos(:,col)/max_x_pos(col);
+        end
+        motion_params(id).videos(vid).normed_x_pos_mat=normed_x_pos_mat;
+        normed_x_pos_mat=[];
+
+        for col=1:length(motion_params(id).max_x_neg)
+            normed_x_neg_mat(col,:)=...
+                motion_params(id).videos(vid).x_neg(:,col)/max_x_neg(col);
+        end
+        motion_params(id).videos(vid).normed_x_neg_mat=normed_x_neg_mat;
+        normed_x_neg_mat=[];
+
+        for col=1:length(motion_params(id).max_x_dir)
+            normed_x_dir_mat(col,:)=...
+                motion_params(id).videos(vid).x_dir(:,col)/max_x_dir(col);
+        end
+        motion_params(id).videos(vid).normed_x_dir_mat=normed_x_dir_mat;
+        normed_x_dir_mat=[];
+
+        for col=1:length(motion_params(id).max_y_pos)
+            normed_y_pos_mat(col,:)=...
+                motion_params(id).videos(vid).y_pos(:,col)/max_y_pos(col);
+        end
+        motion_params(id).videos(vid).normed_y_pos_mat=normed_y_pos_mat;
+        normed_y_pos_mat=[];
+
+        for col=1:length(motion_params(id).max_y_neg)
+            normed_y_neg_mat(col,:)=...
+                motion_params(id).videos(vid).y_neg(:,col)/max_y_neg(col);
+        end
+        motion_params(id).videos(vid).normed_y_neg_mat=normed_y_neg_mat;
+        normed_y_neg_mat=[];
+
+        for col=1:length(motion_params(id).max_y_dir)
+            normed_y_dir_mat(col,:)=...
+                motion_params(id).videos(vid).y_dir(:,col)/max_y_dir(col);
+        end
+        motion_params(id).videos(vid).normed_y_dir_mat=normed_y_dir_mat;
+        normed_y_dir_mat=[];
+
+        for col=1:length(motion_params(id).max_z_pos)
+            normed_z_pos_mat(col,:)=...
+                motion_params(id).videos(vid).z_pos(:,col)/max_z_pos(col);
+        end
+        motion_params(id).videos(vid).normed_z_pos_mat=normed_z_pos_mat;
+        normed_z_pos_mat=[];
+
+        for col=1:length(motion_params(id).max_z_neg)
+            normed_z_neg_mat(col,:)=...
+                motion_params(id).videos(vid).z_neg(:,col)/max_z_neg(col);
+        end
+        motion_params(id).videos(vid).normed_z_neg_mat=normed_z_neg_mat;
+        normed_z_neg_mat=[];
+
+        for col=1:length(motion_params(id).max_z_dir)
+            normed_z_dir_mat(col,:)=...
+                motion_params(id).videos(vid).z_dir(:,col)/max_z_dir(col);
+        end
+        motion_params(id).videos(vid).normed_z_dir_mat=normed_z_dir_mat;
+        normed_z_dir_mat=[];
+
+        for col=1:length(motion_params(id).max_coord_eucl_dif)
+            normed_coord_eucl_dif_mat(col,:)=...
+                motion_params(id).videos(vid).coord_eucl_dif(:,col)/max_coord_eucl_dif(col);
+        end
+        motion_params(id).videos(vid).normed_coord_eucl_dif_mat=normed_coord_eucl_dif_mat;
+        normed_coord_eucl_dif_mat=[];
+    end
+end
+save motion_params motion_params
