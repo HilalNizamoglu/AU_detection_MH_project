@@ -49,9 +49,7 @@ def test_binarize_leaves_the_input_untouched():
 
 def test_confusion_counts_assigns_each_cell_one_category():
     """The worked example gives one cell to each category."""
-    counts = preprocessing.confusion_counts(
-        ACTUAL, PREDICTED, THRESHOLD
-    )
+    counts = preprocessing.confusion_counts(ACTUAL, PREDICTED, THRESHOLD)
     assert counts["TP"] == 1
     assert counts["FP"] == 1
     assert counts["TN"] == 1
@@ -60,9 +58,7 @@ def test_confusion_counts_assigns_each_cell_one_category():
 
 def test_confusion_counts_sum_to_the_number_of_cells():
     """Every cell is counted exactly once."""
-    counts = preprocessing.confusion_counts(
-        ACTUAL, PREDICTED, THRESHOLD
-    )
+    counts = preprocessing.confusion_counts(ACTUAL, PREDICTED, THRESHOLD)
     total = counts["TP"] + counts["FP"] + counts["TN"] + counts["FN"]
     assert total == ACTUAL.size
 
@@ -77,9 +73,7 @@ def test_confusion_counts_records_false_detections_by_column():
 
 def test_confusion_counts_falls_back_to_column_indices():
     """Without labels, a false detection is reported by index."""
-    counts = preprocessing.confusion_counts(
-        ACTUAL, PREDICTED, THRESHOLD
-    )
+    counts = preprocessing.confusion_counts(ACTUAL, PREDICTED, THRESHOLD)
     assert counts["false_detections"] == [1]
 
 
@@ -97,9 +91,7 @@ def test_confusion_counts_records_one_entry_per_false_positive():
 def test_confusion_counts_rejects_mismatched_shapes():
     """A prediction matrix of another shape is an error."""
     with pytest.raises(ValueError, match="shape"):
-        preprocessing.confusion_counts(
-            ACTUAL, np.zeros((3, 2)), THRESHOLD
-        )
+        preprocessing.confusion_counts(ACTUAL, np.zeros((3, 2)), THRESHOLD)
 
 
 def test_confusion_counts_rejects_mismatched_labels():
@@ -112,12 +104,8 @@ def test_confusion_counts_rejects_mismatched_labels():
 
 def test_confusion_percentages_are_whole_percents_of_the_cells():
     """Each category as a rounded percentage of the matrix."""
-    counts = preprocessing.confusion_counts(
-        ACTUAL, PREDICTED, THRESHOLD
-    )
-    percentages = preprocessing.confusion_percentages(
-        counts, ACTUAL.size
-    )
+    counts = preprocessing.confusion_counts(ACTUAL, PREDICTED, THRESHOLD)
+    percentages = preprocessing.confusion_percentages(counts, ACTUAL.size)
     assert percentages == {
         "TP_perc": 25,
         "FP_perc": 25,

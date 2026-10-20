@@ -116,9 +116,9 @@ def test_roc_auc_is_one_for_a_perfectly_separable_prediction():
 
 def test_roc_auc_scores_the_worked_example():
     """Three of four positive-negative pairs ordered, one tied."""
-    assert analyses.roc_auc(
-        ACTUAL, PREDICTED, THRESHOLD
-    ) == pytest.approx(0.625)
+    assert analyses.roc_auc(ACTUAL, PREDICTED, THRESHOLD) == pytest.approx(
+        0.625
+    )
 
 
 def test_roc_auc_thresholds_only_the_ground_truth():
@@ -303,44 +303,59 @@ def test_drop_mirrored_pairs_keeps_one_of_each_unordered_pair(
     unique = analyses.drop_mirrored_pairs(table)
     assert len(unique) == 3
     seen = {
-        frozenset((row.Avatar_0, row.Avatar_1))
-        for row in unique.itertuples()
+        frozenset((row.Avatar_0, row.Avatar_1)) for row in unique.itertuples()
     }
     assert len(seen) == 3
 
 
+# Two frames by two landmarks, matching the orientation of the
+# displacement files: landmark 0 moves 1 unit per frame, landmark 1
+# moves 3.
+DISPLACEMENT = np.array([[1.0, 3.0], [1.0, 3.0]])
+
+
 def test_active_inactive_ratio_compares_targeted_to_other_landmarks():
     """Targeted landmarks moving a third as far gives 33 percent."""
-    displacement = np.array([[1.0, 1.0], [3.0, 3.0]])
-    ratio = analyses.active_inactive_ratio(displacement, [0])
+    ratio = analyses.active_inactive_ratio(DISPLACEMENT, [0])
     assert ratio == pytest.approx(100 / 3)
+
+
+def test_active_inactive_ratio_exceeds_one_hundred_when_targeted_lead():
+    """Targeting the landmark that moves furthest gives 300 percent."""
+    ratio = analyses.active_inactive_ratio(DISPLACEMENT, [1])
+    assert ratio == pytest.approx(300.0)
 
 
 def test_active_inactive_ratio_is_one_hundred_when_motion_is_uniform():
     """No preference for the targeted landmarks is 100 percent."""
     displacement = np.array([[2.0, 2.0], [2.0, 2.0]])
-    assert analyses.active_inactive_ratio(
-        displacement, [0]
-    ) == pytest.approx(100.0)
+    assert analyses.active_inactive_ratio(displacement, [0]) == pytest.approx(
+        100.0
+    )
 
 
 def test_active_inactive_ratio_is_scale_invariant():
     """Scaling every landmark leaves the ratio unchanged."""
-    displacement = np.array([[1.0, 1.0], [3.0, 3.0]])
     assert analyses.active_inactive_ratio(
-        displacement * 7.0, [0]
-    ) == pytest.approx(analyses.active_inactive_ratio(displacement, [0]))
+        DISPLACEMENT * 7.0, [0]
+    ) == pytest.approx(analyses.active_inactive_ratio(DISPLACEMENT, [0]))
+
+
+def test_active_inactive_ratio_indexes_landmarks_not_frames():
+    """target_indices index the columns of a frames-by-landmarks array."""
+    tall = np.vstack([DISPLACEMENT] * 10)
+    assert analyses.active_inactive_ratio(tall, [0]) == pytest.approx(
+        analyses.active_inactive_ratio(DISPLACEMENT, [0])
+    )
 
 
 def test_active_inactive_ratio_rejects_targeting_every_landmark():
     """With no landmarks left over there is nothing to compare against."""
-    displacement = np.array([[1.0, 1.0], [3.0, 3.0]])
     with pytest.raises(ValueError, match="landmark"):
-        analyses.active_inactive_ratio(displacement, [0, 1])
+        analyses.active_inactive_ratio(DISPLACEMENT, [0, 1])
 
 
 def test_active_inactive_ratio_rejects_an_out_of_range_index():
     """A target index past the last landmark is an error."""
-    displacement = np.array([[1.0, 1.0], [3.0, 3.0]])
     with pytest.raises(ValueError, match="landmark"):
-        analyses.active_inactive_ratio(displacement, [5])
+        analyses.active_inactive_ratio(DISPLACEMENT, [5])

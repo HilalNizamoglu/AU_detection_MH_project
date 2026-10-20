@@ -41,12 +41,8 @@ def test_animations_cover_eleven_aus_and_seven_brow_combinations():
     assert len(utils.ANIMATIONS) == 18
     assert len(utils.AU_ONLY_ANIMATIONS) == 11
     assert utils.AU_ONLY_ANIMATIONS == utils.ANIMATIONS[:11]
-    assert all(
-        name.startswith("AU") for name in utils.AU_ONLY_ANIMATIONS
-    )
-    assert all(
-        name.startswith("brows") for name in utils.ANIMATIONS[11:]
-    )
+    assert all(name.startswith("AU") for name in utils.AU_ONLY_ANIMATIONS)
+    assert all(name.startswith("brows") for name in utils.ANIMATIONS[11:])
 
 
 def test_detectors_are_the_three_compared_tools():
@@ -82,9 +78,7 @@ def test_matrix_filename_rejects_an_unknown_source():
         utils.matrix_filename("Ada", "AU01", "openface")
 
 
-def test_load_matrix_returns_the_matrix_the_file_holds(
-    sourcedata, matrix
-):
+def test_load_matrix_returns_the_matrix_the_file_holds(sourcedata, matrix):
     """The loader reads the variable the source's convention names."""
     loaded = utils.load_matrix(sourcedata, "Ada", "AU01", "actual")
     assert isinstance(loaded, np.ndarray)
@@ -104,9 +98,7 @@ def test_load_matrix_raises_for_a_missing_file(sourcedata):
         utils.load_matrix(sourcedata, "Garry", "AU01", "actual")
 
 
-def test_load_matrix_raises_when_the_variable_is_absent(
-    tmp_path, matrix
-):
+def test_load_matrix_raises_when_the_variable_is_absent(tmp_path, matrix):
     """A .mat under the right name but the wrong variable is an error."""
     savemat(tmp_path / "Ada_actualValues_anim_AU01.mat", {"other": matrix})
     with pytest.raises(KeyError, match="actual_mat"):
