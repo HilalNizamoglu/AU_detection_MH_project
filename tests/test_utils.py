@@ -141,3 +141,43 @@ def test_load_landmark_displacement_raises_for_a_missing_file(tmp_path):
     """A missing displacement file is an error, not an empty frame."""
     with pytest.raises(FileNotFoundError):
         utils.load_landmark_displacement(tmp_path, "Pia", "AU23")
+
+
+@pytest.fixture
+def landmark_mapping(tmp_path):
+    """An AU-to-landmark mapping in the layout MATLAB wrote it in."""
+    rows = [
+        ("AU01", "inner-EB-raiser", [1, 2, 3]),
+        ("AU02", "outer-EB-raiser", [2, 4]),
+    ]
+    cells = np.empty((len(rows), 3), dtype=object)
+    for index, (animation, description, landmarks) in enumerate(rows):
+        cells[index, 0] = np.array([animation])
+        cells[index, 1] = np.array([description])
+        cells[index, 2] = np.array([landmarks], dtype=np.uint8)
+    savemat(tmp_path / "AU_landm_mapping.mat", {"AU_landm_mapping": cells})
+    return tmp_path
+
+
+def test_load_landmark_mapping_keys_on_the_animation_name(
+    landmark_mapping,
+):
+    """One entry per animation, keyed by the name in the first column."""
+    mapping = utils.load_landmark_mapping(landmark_mapping)
+    assert set(mapping) == {"AU01", "AU02"}
+
+
+def test_load_landmark_mapping_converts_to_zero_based_indices(
+    landmark_mapping,
+):
+    """MATLAB counts landmarks from one, numpy from zero."""
+    mapping = utils.load_landmark_mapping(landmark_mapping)
+    np.testing.assert_array_equal(mapping["AU01"], [0, 1, 2])
+    np.testing.assert_array_equal(mapping["AU02"], [1, 3])
+    assert mapping["AU01"].dtype == np.dtype(int)
+
+
+def test_load_landmark_mapping_raises_for_a_missing_file(tmp_path):
+    """The mapping is required, so its absence is an error."""
+    with pytest.raises(FileNotFoundError):
+        utils.load_landmark_mapping(tmp_path)
