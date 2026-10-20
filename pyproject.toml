@@ -66,7 +66,7 @@ notebooks = [
     "ipykernel>=6.0.0",
     "matplotlib>=3.8",
     "seaborn>=0.13",
-    "pingouin>=0.5.4",
+    "pingouin>=0.7",
     "statsmodels>=0.14",
     "scikit-posthocs>=0.9",
 ]

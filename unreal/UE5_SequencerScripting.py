@@ -23,10 +23,24 @@ import unreal
 # Animation and MetaHuman names
 MHS = ["Ada", "Garry"]
 ANIMATIONS = [
-    "AU01", "AU02", "AU04", "AU06", "AU07", "AU10",
-    "AU12", "AU14", "AU15", "AU17", "AU23", "browsAll",
-    "browsAU10", "browsAU12", "browsAU14", "browsAU15",
-    "browsAU17", "browsAU23",
+    "AU01",
+    "AU02",
+    "AU04",
+    "AU06",
+    "AU07",
+    "AU10",
+    "AU12",
+    "AU14",
+    "AU15",
+    "AU17",
+    "AU23",
+    "browsAll",
+    "browsAU10",
+    "browsAU12",
+    "browsAU14",
+    "browsAU15",
+    "browsAU17",
+    "browsAU23",
 ]
 
 # The level sequence currently open in the editor, and its control rig

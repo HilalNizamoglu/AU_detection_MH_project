@@ -14,14 +14,18 @@ and writes the dataset in [`../ds-au_detection_mh`](../ds-au_detection_mh).
 
 Run them in that order: `01` writes the tables the other three read.
 
-The notebooks are committed with their outputs cleared, so each one has
-to be executed once to render the figures. Install the extra that
-carries Jupyter, `matplotlib`, `seaborn` and `pingouin` first:
+They are committed with the outputs of a full run, so the tables and
+figures are readable without executing anything. To run them, install
+the extra that carries Jupyter, `matplotlib`, `seaborn` and `pingouin`:
 
 ```bash
 uv sync --extra notebooks
 uv run jupyter lab
 ```
+
+Each notebook also writes its figures as `.svg` next to the tables in
+`../ds-au_detection_mh/derivatives/au-detection-metrics/`. Those files
+are not committed, so a run leaves them untracked.
 
 `analyses_and_figures_no-posthocs_script.ipynb` is the original
 single-notebook walkthrough the four above were derived from, kept for
