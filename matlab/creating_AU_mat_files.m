@@ -1,5 +1,13 @@
-main_path='C:\Users\hilal\Desktop\JLU-Dobs\MetaHuman Recordings\UnrealEngine_Animations';
-out_path= 'C:\Users\hilal\Desktop\JLU-Dobs\MetaHuman Recordings\UnrealEngine_Animations\UE5_Python';
+%% Paths
+% data_root points at the dataset in this repository.  The rendered
+% animation videos and the raw per-detector output directories are not
+% committed, so set data_root to a local copy of them when re-running a
+% step that needs them.  Separators below are Windows-style, as in the
+% run the published results come from.  See README.md.
+data_root=['..' filesep 'ds-au_detection_mh' filesep 'sourcedata' filesep];
+main_path=data_root;
+% Where the .mat files the Python analyses read are written
+out_path=data_root;
 
 MHs={'Ada','Garry','Cooper','Pia'};
 animations={'AU01','AU02','AU04','AU06','AU07','AU10' ...

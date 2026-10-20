@@ -1,0 +1,44 @@
+# Paths excluded from the build context that podman and the CI builder
+# send to the build, which keeps the context small and the build quick.
+#
+# What ends up inside the image is decided by the COPY instructions that
+# generate_images.sh writes, which name each path explicitly. A path has
+# to be absent from this file for a COPY to find it.
+#
+# apptainer reads the %files section of Singularity.def directly and does
+# not consult this file at all.
+
+# Version control history
+.git
+.gitignore
+
+# Local environments, caches and build output
+.venv
+.python-version
+__pycache__
+*.py[cod]
+*.egg-info
+build
+dist
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.ipynb_checkpoints
+
+# Container definitions and images: the Dockerfile is the build input and
+# the images are outputs, so neither belongs inside the image
+Dockerfile
+.dockerignore
+Singularity.def
+*.sif
+*.simg
+
+# The dataset, which is bind-mounted at run time instead of baked in.
+# Keeping it out holds the image size down and keeps participant data out
+# of a published image. No COPY names it, so it stays out of the .sif too.
+ds-au_detection_mh
+
+# Editor and OS metadata
+.DS_Store
+.vscode
+.idea

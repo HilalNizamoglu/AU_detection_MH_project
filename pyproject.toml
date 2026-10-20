@@ -1,0 +1,116 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "au_detection_mh"
+version = "0.1.0"
+description = "Evaluation of automatic action unit detection tools on MetaHuman facial animations"
+readme = "README.md"
+requires-python = ">=3.11,<3.15"
+license = { text = "BSD-3-Clause" }
+authors = [
+    { name = "Peer Herholz", email = "herholz.peer@gmail.com" },
+]
+maintainers = [
+    { name = "Peer Herholz", email = "herholz.peer@gmail.com" },
+]
+keywords = [
+    "action units",
+    "facial expression",
+    "MetaHuman",
+    "Unreal Engine",
+    "OpenFace",
+    "AFAR",
+    "py-feat",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+# Runtime requirements of the analyses.  Add every package the code in
+# au_detection_mh/ imports, with a lower bound, for example "numpy>=1.26".
+# Run "uv lock" after each edit so that uv.lock records the versions
+# that were resolved, and commit uv.lock together with this file.
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.2",
+    "scipy>=1.12",
+    "scikit-learn>=1.4",
+]
+
+[project.optional-dependencies]
+# Formatting, spelling and test tooling, matching the checks the
+# workflows in .github/workflows run.
+dev = [
+    "pytest>=6.0",
+    "pytest-cov",
+    "coverage>=7.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "codespell>=2.2.0",
+]
+# Jupyter, for the notebooks in analyzes/ and for the kernel that the
+# container images register, together with the plotting and
+# hypothesis-testing packages the notebooks use.  The code in
+# au_detection_mh/ returns tables and does not import these, which is
+# why they sit here rather than in dependencies above.
+notebooks = [
+    "jupyterlab>=4.0.0",
+    "ipykernel>=6.0.0",
+    "matplotlib>=3.8",
+    "seaborn>=0.13",
+    "pingouin>=0.5.4",
+    "statsmodels>=0.14",
+    "scikit-posthocs>=0.9",
+]
+
+# The same sets are declared as dependency groups, which "uv run" and
+# "uv sync" install without a flag, while extras are installed only when
+# asked for.  Each group points at the extra above, so the package lists
+# are written once.
+[dependency-groups]
+dev = ["au_detection_mh[dev]"]
+notebooks = ["au_detection_mh[notebooks]"]
+
+[project.urls]
+Homepage = "https://github.com/PeerHerholz/AU_detection_MH_project"
+Repository = "https://github.com/PeerHerholz/AU_detection_MH_project.git"
+Issues = "https://github.com/PeerHerholz/AU_detection_MH_project/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["au_detection_mh*"]
+exclude = ["tests*"]
+
+[tool.black]
+line-length = 79
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 79
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+pythonpath = ["."]
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--tb=short",
+]
+markers = [
+    "slow: marks tests that take a long time to run",
+]
+norecursedirs = [
+    ".git", "build", "dist", "*.egg-info",
+    "__pycache__", ".pytest_cache", ".venv",
+]

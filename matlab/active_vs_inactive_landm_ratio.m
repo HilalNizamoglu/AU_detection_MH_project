@@ -4,8 +4,18 @@ animations={'AU01','AU02','AU04','AU06','AU07','AU10' ...
             'AU12','AU14','AU15','AU17','AU23','browsAll'...
             'browsAU10','browsAU12','browsAU14','browsAU15','browsAU17','browsAU23'};
 AUs_only_anim=animations(1:end-7);
-path='C:\Users\hilal\Desktop\JLU-Dobs\MetaHumanRecordings\_UnrealEngine_Animations\Analyses\Inverse_affine_transform\';
-load([path 'peak_frame_classification\motion_params.mat'])
+%% Paths
+% data_root points at the dataset in this repository.  The rendered
+% animation videos and the raw per-detector output directories are not
+% committed, so set data_root to a local copy of them when re-running a
+% step that needs them.  Separators below are Windows-style, as in the
+% run the published results come from.  See README.md.
+data_root=['..' filesep 'ds-au_detection_mh' filesep 'sourcedata' filesep];
+path=data_root;
+% motion_params.mat is not committed: it is the displacement struct
+% rigid_inverse_affine_transformation.m produces.  Re-run that script
+% to regenerate it, or point path at the directory holding it.
+load([path 'motion_params.mat'])
 load([path 'AU_landm_mapping.mat'])
 
 %% 

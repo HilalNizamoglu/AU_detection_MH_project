@@ -1,22 +1,25 @@
 % How to analyze?
-% 1- determine the overlapping AUs between two  softwares
+% 1- determine the overlapping AUs between two  software
 %    - load OF and AFAR data
 % 2- plot the AU intensity range for overlapping AUs in two columns (OF &
 %    AFAR) ==> 3 plots and colormaps: OF, AFAR, OF and AFAR Together
 %    - example: plotAUNoVideo.m
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% MH_path= ['C:\Users\hilal\Desktop\JLU-Dobs\MetaHuman Recordings\Trimmed Videos\'];
-% id= {'Cooper', 'Lena', 'Ettore'};
 % expressions={'Amaze-A', 'Amaze-B', 'Anger-A', 'Anger-B', 'Face-ROM', ...
 %     'Fear-A', 'Fear-B', 'Happy-A', 'Happy-B', 'Idle', 'Sad-A', 'Sad-B'};
 % expressions={'Amaze-B', 'Anger-B', 'Face-ROM', 'Fear-B', 'Happy-B', 'Sad-B'};
 
-% analysis_path=['C:\Users\hilal\Desktop\JLU-Dobs\MetaHuman Recordings\Analysis\'];
-% cd(analysis_path)
 
 
-path=['C:\Users\hilal\Desktop\JLU-Dobs\MetaHuman Recordings\UnrealEngine_Animations\'];
+%% Paths
+% data_root points at the dataset in this repository.  The rendered
+% animation videos and the raw per-detector output directories are not
+% committed, so set data_root to a local copy of them when re-running a
+% step that needs them.  Separators below are Windows-style, as in the
+% run the published results come from.  See README.md.
+data_root=['..' filesep 'ds-au_detection_mh' filesep 'sourcedata' filesep];
+path=data_root;
 id={'Ada','Garry','Cooper','Pia'};
 AU_names={'AU01','AU02','AU04','AU06','AU07','AU10','AU12','AU14','AU15',...
     'AU17','AU23','browsAll','browsAU10','browsAU12','browsAU14','browsAU15','browsAU17','browsAU23'};

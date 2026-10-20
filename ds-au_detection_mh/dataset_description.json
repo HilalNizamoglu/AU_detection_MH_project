@@ -1,0 +1,46 @@
+{
+    "Name": "Action unit detection on MetaHuman facial animations",
+    "BIDSVersion": "1.9.0",
+    "DatasetType": "raw",
+    "License": "BSD-3-Clause",
+    "Authors": [
+        ""
+    ],
+    "Keywords": [
+        "action units",
+        "facial expression",
+        "MetaHuman",
+        "Unreal Engine 5",
+        "OpenFace",
+        "AFAR",
+        "py-feat"
+    ],
+    "Acknowledgements": "",
+    "HowToAcknowledge": "Please cite this paper: ",
+    "Funding": [
+        ""
+    ],
+    "EthicsApprovals": [
+        "Not applicable: the dataset contains no human participant data. Its units are four Unreal Engine MetaHuman avatars."
+    ],
+    "ReferencesAndLinks": [
+        "https://github.com/PeerHerholz/AU_detection_MH_project",
+        "https://github.com/TadasBaltrusaitis/OpenFace",
+        "https://github.com/AffectAnalysisGroup/AFARtoolbox",
+        "https://py-feat.org/"
+    ],
+    "DatasetDOI": "",
+    "GeneratedBy": [
+        {
+            "Name": "Unreal Engine 5 Sequencer scripting",
+            "Version": "",
+            "CodeURL": "https://github.com/PeerHerholz/AU_detection_MH_project/blob/main/unreal/UE5_SequencerScripting.py"
+        }
+    ],
+    "SourceDatasets": [
+        {
+            "URL": "",
+            "Version": ""
+        }
+    ]
+}
