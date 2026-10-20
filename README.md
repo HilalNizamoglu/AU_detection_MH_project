@@ -211,24 +211,26 @@ apptainer exec au_detection_mh.sif pytest
 ### Published images
 
 The container workflow builds the image on every push and pull request,
-and publishes it to the GitHub Container Registry on pushes to `main`
-and on `v*` tags, authenticating with the `GITHUB_TOKEN` the workflow
-already has. A tag push publishes the version number, so pull by that
-tag rather than by `latest`:
+and publishes it to Docker Hub and the GitHub Container Registry on
+pushes to `main` and on `v*` tags. The lab's namespace is spelled
+differently on the two: `vccn-lab` on ghcr.io, `vccnlab` on Docker Hub.
+A tag push publishes the version number, so pull by that tag rather
+than by `latest`:
 
 ```bash
-podman pull ghcr.io/peerherholz/au_detection_mh:1.2.3
+podman pull ghcr.io/vccn-lab/au_detection_mh:1.2.3
+podman pull vccnlab/au_detection_mh:1.2.3
 ```
 
-To publish to Docker Hub as well, add the repository name to `images:`
-in `.github/workflows/container_build_publish.yml`, set the
-`DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` repository secrets, and
-re-add the Docker Hub login step.
+The ghcr.io push authenticates with the `GITHUB_TOKEN` the workflow
+already has. The Docker Hub push needs the `DOCKERHUB_USERNAME` and
+`DOCKERHUB_TOKEN` secrets set on the repository, and fails without
+them.
 
 The `.sif` is not published by CI. Push one from a local build with:
 
 ```bash
-REGISTRY_OWNER=peerherholz IMAGE_TAG=1.2.3 \
+REGISTRY_OWNER=vccn-lab IMAGE_TAG=1.2.3 \
     bash generate_images.sh singularity local push
 ```
 
