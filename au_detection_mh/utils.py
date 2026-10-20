@@ -183,3 +183,46 @@ def load_landmark_displacement(derivatives_dir, avatar, animation):
     if not os.path.isfile(path):
         raise FileNotFoundError(path)
     return np.asarray(pd.read_csv(path, header=None).values)
+
+
+LANDMARK_MAPPING_FILE = "AU_landm_mapping.mat"
+
+
+def load_landmark_mapping(data_dir):
+    """Read which landmarks each animation is expected to move.
+
+    Parameters
+    ----------
+    data_dir : str or os.PathLike
+        Directory holding ``AU_landm_mapping.mat``, normally
+        ``ds-au_detection_mh/sourcedata``.
+
+    Returns
+    -------
+    dict of str to numpy.ndarray
+        Animation name to the indices of the landmarks it targets,
+        counted from zero. The file counts them from one, as MATLAB
+        wrote it.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the mapping is not in ``data_dir``.
+    KeyError
+        If the file does not hold the expected variable.
+    """
+    path = os.path.join(data_dir, LANDMARK_MAPPING_FILE)
+    if not os.path.isfile(path):
+        raise FileNotFoundError(path)
+    contents = loadmat(path)
+    variable = "AU_landm_mapping"
+    if variable not in contents:
+        raise KeyError(f"{path} does not hold the variable {variable!r}")
+    cells = contents[variable]
+    return {
+        str(cells[row, 0].ravel()[0]): np.asarray(cells[row, 2])
+        .ravel()
+        .astype(int)
+        - 1
+        for row in range(cells.shape[0])
+    }
