@@ -8,7 +8,7 @@ version.
 | Subdirectory | Produced by | Contents |
 | --- | --- | --- |
 | `landmark-displacement/` | `matlab/rigid_inverse_affine_transformation.m` | `<avatar>_<animation>_landmark_displacement.csv`, one row per frame and one column per landmark, after head motion has been removed by the rigid inverse affine transform |
-| `au-detection-metrics/` | the notebooks in `analyzes/`, via `au_detection_mh` | The group-level tables behind the figures: per-detector classification metrics, zero-lag cross-correlations, and the active-over-inactive landmark displacement ratios |
+| `au-detection-metrics/` | the notebooks in `analyses/`, via `au_detection_mh` | The group-level tables behind the figures: per-detector classification metrics, zero-lag cross-correlations, and the active-over-inactive landmark displacement ratios |
 
 What belongs in version control here is covered by the two questions in
 [the dataset README](../README.md): per-frame output large enough to

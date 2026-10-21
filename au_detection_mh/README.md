@@ -2,7 +2,7 @@
 
 This directory contains the `code` for the analyses of the
 `AU_detection_MH_project`, installed as the `au_detection_mh` package
-and imported by the notebooks in [`../analyzes`](../analyzes).
+and imported by the notebooks in [`../analyses`](../analyses).
 
 | Module | Contents |
 | --- | --- |

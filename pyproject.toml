@@ -56,7 +56,7 @@ dev = [
     "flake8>=6.0.0",
     "codespell>=2.2.0",
 ]
-# Jupyter, for the notebooks in analyzes/ and for the kernel that the
+# Jupyter, for the notebooks in analyses/ and for the kernel that the
 # container images register, together with the plotting and
 # hypothesis-testing packages the notebooks use.  The code in
 # au_detection_mh/ returns tables and does not import these, which is

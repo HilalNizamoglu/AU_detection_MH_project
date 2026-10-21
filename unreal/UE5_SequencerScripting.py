@@ -7,7 +7,7 @@ the editor process.  It does two things:
 1. Assigns keys at the start, peak and end frame for every selected
    control rig, which is what animates the action unit.
 2. Reads the resulting per-frame rig values back out, which is the
-   ground truth the analyses in ``../analyzes`` score the detectors
+   ground truth the analyses in ``../analyses`` score the detectors
    against.
 
 The controls to animate are whichever are selected in the editor when

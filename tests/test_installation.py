@@ -1,7 +1,7 @@
 """Tests for the installed package.
 
 These check that the environment created by ``uv sync`` exposes the
-project under its own name, which is what the notebooks in ``analyzes``
+project under its own name, which is what the notebooks in ``analyses``
 and the remaining tests in this directory rely on.
 """
 

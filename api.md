@@ -23,4 +23,4 @@ which inputs it rejects.
 
 Plotting and hypothesis testing are not in the package: the modules
 return arrays, dictionaries and `pandas` objects, and the notebooks in
-`analyzes/` do the presentation and the statistics.
+`analyses/` do the presentation and the statistics.

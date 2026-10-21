@@ -171,7 +171,7 @@ generate_container() {
   # Engine 5 Python interpreter. They are copied so that the image
   # carries the full record of how the data was produced, and are read
   # rather than run from inside the container.
-  for path in "$PROJECT" analyzes tests matlab unreal README.md LICENSE; do
+  for path in "$PROJECT" analyses tests matlab unreal README.md LICENSE; do
     args+=(--copy "$path" "/home/$PROJECT/$path")
   done
   args+=(--run "cd /home/$PROJECT \

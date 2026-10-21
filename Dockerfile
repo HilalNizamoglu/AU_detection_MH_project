@@ -48,8 +48,8 @@ COPY ["uv.lock", \
 RUN cd /home/au_detection_mh                 && UV_PROJECT_ENVIRONMENT=/opt/au_detection_mh                    uv sync --frozen --python 3.11                      --extra notebooks --no-install-project                 && rm -rf /root/.cache/uv
 COPY ["au_detection_mh", \
       "/home/au_detection_mh/au_detection_mh"]
-COPY ["analyzes", \
-      "/home/au_detection_mh/analyzes"]
+COPY ["analyses", \
+      "/home/au_detection_mh/analyses"]
 COPY ["tests", \
       "/home/au_detection_mh/tests"]
 COPY ["matlab", \
@@ -194,10 +194,10 @@ RUN printf '{ \
       "name": "copy", \
       "kwds": { \
         "source": [ \
-          "analyzes", \
-          "/home/au_detection_mh/analyzes" \
+          "analyses", \
+          "/home/au_detection_mh/analyses" \
         ], \
-        "destination": "/home/au_detection_mh/analyzes" \
+        "destination": "/home/au_detection_mh/analyses" \
       } \
     }, \
     { \

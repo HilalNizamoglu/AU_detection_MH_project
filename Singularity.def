@@ -7,7 +7,7 @@ From: docker.io/python:3.11-slim-bookworm
 pyproject.toml /home/au_detection_mh/pyproject.toml
 uv.lock /home/au_detection_mh/uv.lock
 au_detection_mh /home/au_detection_mh/au_detection_mh
-analyzes /home/au_detection_mh/analyzes
+analyses /home/au_detection_mh/analyses
 tests /home/au_detection_mh/tests
 matlab /home/au_detection_mh/matlab
 unreal /home/au_detection_mh/unreal
@@ -191,9 +191,9 @@ printf '{ \
       "name": "copy", \
       "kwds": { \
         "source": [ \
-          "analyzes" \
+          "analyses" \
         ], \
-        "destination": "/home/au_detection_mh/analyzes" \
+        "destination": "/home/au_detection_mh/analyses" \
       } \
     }, \
     { \

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script: build_book.sh
-# Purpose: Build the Jupyter Book from the notebooks in analyzes/ and the
+# Purpose: Build the Jupyter Book from the notebooks in analyses/ and the
 #          READMEs listed in myst.yml, and write the API reference next
 #          to it.
 # Description: Jupyter Book 2 runs on MyST, which is a Node application

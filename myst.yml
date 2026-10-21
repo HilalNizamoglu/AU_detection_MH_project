@@ -1,6 +1,6 @@
 # Jupyter Book 2 configuration.  The book is built from the files listed
 # in the table of contents below, with the repository root as the project
-# root, so the notebooks in analyzes/ and the per-directory READMEs are
+# root, so the notebooks in analyses/ and the per-directory READMEs are
 # reached without being copied anywhere.
 #
 # Notebook execution is off: MyST inserts the outputs already stored in
@@ -44,12 +44,12 @@ project:
     # three read.
     - title: Analyses
       children:
-        - file: analyzes/README.md
-        - file: analyzes/01_classification_metrics.ipynb
-        - file: analyzes/02_binary_classification_performance.ipynb
-        - file: analyzes/03_temporal_alignment.ipynb
-        - file: analyzes/04_landmark_displacement.ipynb
-        - file: analyzes/analyses_and_figures_no-posthocs_script.ipynb
+        - file: analyses/README.md
+        - file: analyses/01_classification_metrics.ipynb
+        - file: analyses/02_binary_classification_performance.ipynb
+        - file: analyses/03_temporal_alignment.ipynb
+        - file: analyses/04_landmark_displacement.ipynb
+        - file: analyses/analyses_and_figures_no-posthocs_script.ipynb
 
     - title: Code
       children:

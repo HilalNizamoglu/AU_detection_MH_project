@@ -23,7 +23,7 @@ Landmark displacement
 
 The functions return arrays, dictionaries and ``pandas`` objects.
 Plotting and hypothesis testing are left to the notebooks in
-``analyzes``.
+``analyses``.
 """
 
 import warnings

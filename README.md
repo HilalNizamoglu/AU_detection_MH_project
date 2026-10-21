@@ -26,7 +26,7 @@ containers are built with [podman](https://podman.io/) and
 | Path | Contents |
 | --- | --- |
 | `au_detection_mh/` | The code the analyses call, installed as a package |
-| `analyzes/` | Notebooks documenting the analyses, one per step |
+| `analyses/` | Notebooks documenting the analyses, one per step |
 | `tests/` | `pytest` tests for the code in `au_detection_mh/` |
 | `ds-au_detection_mh/` | The dataset and its derivatives, with the rules on what may be committed |
 | `matlab/` | MATLAB sources that ran the detectors and produced the data |
@@ -87,7 +87,7 @@ two disagree.
 
 ## Running the analyses
 
-The notebooks in `analyzes/` are numbered in the order they run.
+The notebooks in `analyses/` are numbered in the order they run.
 `01_classification_metrics.ipynb` writes the tables the other three
 read, so run it first in a fresh checkout; the tables it writes are also
 committed, so the later notebooks run without it.
@@ -139,7 +139,7 @@ The book build is the one that needs something uv cannot install: see
 (documentation)=
 ## Documentation
 
-The notebooks in `analyzes/`, the per-directory READMEs and this file
+The notebooks in `analyses/`, the per-directory READMEs and this file
 are built into a [Jupyter Book](https://jupyterbook.org/) by
 `build_book.sh`. `myst.yml` holds the table of contents and the
 configuration.
