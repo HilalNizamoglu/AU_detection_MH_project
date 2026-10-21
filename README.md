@@ -296,9 +296,16 @@ podman pull vccnlab/au_detection_mh:1.2.3
 ```
 
 The ghcr.io push authenticates with the `GITHUB_TOKEN` the workflow
-already has. The Docker Hub push needs the `DOCKERHUB_USERNAME` and
-`DOCKERHUB_TOKEN` secrets set on the repository, and fails without
-them.
+already has, so it needs no secret as long as the image namespace
+matches the repository owner. Docker Hub is opt-in: set the
+`DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` secrets on the repository and
+it is published to as well, and without them that registry is skipped
+rather than failing the job.
+
+All four workflows also carry a `workflow_dispatch` trigger, so they can
+be started by hand from the Actions tab on any branch. A manual run
+builds but does not publish: both publish gates test for a push, so what
+reaches a registry or Pages always corresponds to a commit on `main`.
 
 The `.sif` is not published by CI. Push one from a local build with:
 

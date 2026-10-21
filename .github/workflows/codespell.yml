@@ -3,6 +3,11 @@
 name: Codespell
 
 on:
+  # Lets the workflow be started by hand from the Actions tab, on any
+  # branch, without needing a push or a pull request.  Useful for
+  # re-running after a repository setting changes, such as switching on
+  # Pages or adding a registry credential.
+  workflow_dispatch:
   push:
     branches: [main]
   pull_request:
