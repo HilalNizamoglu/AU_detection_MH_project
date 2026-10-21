@@ -1,0 +1,58 @@
+name: tests & formatting
+
+# The events/triggers when it should be run
+# Here we set that the workflow should run
+# whenever there was a push or PR to the
+# main branch
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# We define the jobs that should be run
+# and the respective runner, ie virtual machine
+# Here, the workflow runs on the latest ubuntu
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    # Below we define all steps that should be
+    # run within the workflow
+    steps:
+
+    # Step 1: Checkout the repository
+    - uses: actions/checkout@v4
+
+    # Step 2: Install uv, which also provides the Python interpreters
+    #         and caches the resolved wheels between runs
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
+
+    # Step 3: Create the environment from the committed lock file.
+    #         --frozen makes the run fail if uv.lock no longer matches
+    #         pyproject.toml, rather than silently re-resolving. The dev
+    #         dependency group carries flake8 and pytest and is installed
+    #         without a flag.
+    - name: Install au_detection_mh and its dependencies
+      run: |
+        uv sync --frozen --python ${{ matrix.python-version }}
+
+    # Step 4: Run code formatting with flake8
+    - name: Code formatting
+      run: |
+        uv run --frozen flake8 au_detection_mh/ tests/ unreal/
+
+    # Step 5: Run tests with pytest
+    - name: Test code
+      run: |
+        uv run --frozen pytest

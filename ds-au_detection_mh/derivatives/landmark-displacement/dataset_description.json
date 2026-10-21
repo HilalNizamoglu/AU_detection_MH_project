@@ -1,0 +1,23 @@
+{
+    "Name": "Landmark displacement after rigid inverse affine transformation",
+    "BIDSVersion": "1.9.0",
+    "DatasetType": "derivative",
+    "License": "BSD-3-Clause",
+    "Authors": [
+        ""
+    ],
+    "GeneratedBy": [
+        {
+            "Name": "rigid_inverse_affine_transformation.m",
+            "Version": "",
+            "CodeURL": "https://github.com/PeerHerholz/AU_detection_MH_project/blob/main/matlab/rigid_inverse_affine_transformation.m",
+            "Description": "Removes head motion from the OpenFace 2D landmark traces by applying the inverse of the per-frame affine transform, then takes the Euclidean distance of each landmark from its position in the first frame. MATLAB version used for the published run is to be recorded here."
+        }
+    ],
+    "SourceDatasets": [
+        {
+            "URL": "../..",
+            "Version": ""
+        }
+    ]
+}

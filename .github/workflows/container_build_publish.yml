@@ -1,0 +1,105 @@
+name: Build and Publish Container
+
+# The events/triggers when it should be run
+# Images are built on every push and PR so that a broken Dockerfile is
+# caught early, and pushed to the registries only from main and from tags
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push-image:
+    name: Build OCI image and push to repositories
+    runs-on: ubuntu-latest
+
+    env:
+      # Whether this run publishes the image it builds. Pull requests
+      # build only, so that a broken Dockerfile is caught before merge
+      # without a fork being able to push to the registries.
+      PUBLISH: ${{ github.event_name == 'push' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # uv provides uvx, which generate_images.sh uses to run neurodocker
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      # The Dockerfile is regenerated here rather than read from the
+      # repository, so that the published image always matches the
+      # current generate_images.sh and pyproject.toml
+      - name: Generate the Dockerfile
+        run: |
+          bash generate_images.sh docker
+
+      # Buildx is used for the build in CI, where a daemon is available
+      # and layer caching and multi-arch builds come for free. The
+      # generated Dockerfile is engine-neutral, so the same file builds
+      # locally with podman.
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Derive the image tags from the git ref: a semver tag such as
+      # v1.2.3 publishes 1.2.3, 1.2 and latest, while a push to main
+      # publishes main and the commit sha. Every image therefore carries
+      # a tag that names a specific version rather than only "latest".
+      - name: Collect image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          # Image names have to be all lower-case. The lab's namespace
+          # is spelled differently on the two registries: vccn-lab on
+          # the GitHub Container Registry, vccnlab on Docker Hub.
+          images: |
+            ghcr.io/vccn-lab/au_detection_mh
+            vccnlab/au_detection_mh
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=ref,event=branch
+            type=sha,format=long
+          flavor: |
+            latest=${{ startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: Login to DockerHub
+        if: env.PUBLISH == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Packages
+        if: env.PUBLISH == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build image and push to Docker Hub and GitHub Container Registry
+        id: docker_build
+        uses: docker/build-push-action@v6
+        with:
+          # relative path to the place where the source code with the
+          # Dockerfile is located
+          context: ./
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # build everywhere, publish from main and from tags
+          push: ${{ env.PUBLISH == 'true' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}

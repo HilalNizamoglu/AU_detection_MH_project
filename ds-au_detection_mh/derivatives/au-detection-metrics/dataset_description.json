@@ -1,0 +1,23 @@
+{
+    "Name": "Group-level action unit detection metrics",
+    "BIDSVersion": "1.9.0",
+    "DatasetType": "derivative",
+    "License": "BSD-3-Clause",
+    "Authors": [
+        ""
+    ],
+    "GeneratedBy": [
+        {
+            "Name": "au_detection_mh",
+            "Version": "0.1.0",
+            "CodeURL": "https://github.com/PeerHerholz/AU_detection_MH_project",
+            "Description": "Classification metrics, zero-lag cross-correlations and active-over-inactive landmark displacement ratios, written by the notebooks in analyses/. The active-over-inactive ratios are produced by matlab/active_vs_inactive_landm_ratio.m."
+        }
+    ],
+    "SourceDatasets": [
+        {
+            "URL": "../..",
+            "Version": ""
+        }
+    ]
+}

@@ -1,0 +1,73 @@
+# Jupyter Book 2 configuration.  The book is built from the files listed
+# in the table of contents below, with the repository root as the project
+# root, so the notebooks in analyses/ and the per-directory READMEs are
+# reached without being copied anywhere.
+#
+# Notebook execution is off: MyST inserts the outputs already stored in
+# each .ipynb rather than re-running it.  That is what these analyses
+# need, because the notebooks are committed with their outputs and
+# re-running them reads the dataset and takes minutes.  Pass --execute
+# to "myst build" to re-run them instead.
+#
+# Hidden directories, _build and node_modules are excluded by MyST
+# already, so .venv needs no entry here.
+version: 1
+
+project:
+  id: au_detection_mh
+  title: Action unit detection on MetaHuman facial animations
+  description: >-
+    Evaluation of automatic action unit detection tools on MetaHuman
+    facial animations with known rig activations.
+  authors: []
+  keywords:
+    - action units
+    - facial expression
+    - MetaHuman
+    - Unreal Engine
+    - OpenFace
+    - AFAR
+    - py-feat
+  github: https://github.com/PeerHerholz/AU_detection_MH_project
+  # The dataset holds 372 data files and no prose, so it is kept out of
+  # the project; its two READMEs are listed in the toc below and are
+  # reached directly.
+  exclude:
+    - ds-au_detection_mh/**
+
+  toc:
+    # The repository README is the landing page, so the book and the
+    # repository front page cannot drift apart.
+    - file: README.md
+
+    # Numbered in the order they run: 01 writes the tables the other
+    # three read.
+    - title: Analyses
+      children:
+        - file: analyses/README.md
+        - file: analyses/01_classification_metrics.ipynb
+        - file: analyses/02_binary_classification_performance.ipynb
+        - file: analyses/03_temporal_alignment.ipynb
+        - file: analyses/04_landmark_displacement.ipynb
+        - file: analyses/analyses_and_figures_no-posthocs_script.ipynb
+
+    - title: Code
+      children:
+        - file: au_detection_mh/README.md
+        - file: api.md
+        - file: tests/README.md
+
+    # The steps that produced the data, which need MATLAB and Unreal
+    # Engine and so cannot be re-run from the book.
+    - title: Producing the data
+      children:
+        - file: unreal/README.md
+        - file: matlab/README.md
+
+    - title: Data
+      children:
+        - file: ds-au_detection_mh/README.md
+        - file: ds-au_detection_mh/derivatives/README.md
+
+site:
+  template: book-theme

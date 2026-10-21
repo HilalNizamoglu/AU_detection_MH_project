@@ -1,42 +1,315 @@
 # AU_detection_MH_project
-Creating MH animations on UE5 to test AU Detection Tools 
 
-Here you will find ...
-- script to manipulate UE5 Sequencer Scene and Level to create MetaHuman animations:
-AU_detection_MH_project/Python Notebooks and Functions/UE5_SequencerScripting.py
+Code and analysis documentation accompanying an evaluation of automatic
+action unit (AU) detection tools on
+[MetaHuman](https://www.unrealengine.com/en-US/metahuman) facial
+animations. Four MetaHuman avatars were animated in Unreal Engine 5 with
+known rig activations, rendered to video, and passed through
+[OpenFace](https://github.com/TadasBaltrusaitis/OpenFace), the
+[AFAR toolbox](https://github.com/AffectAnalysisGroup/AFARtoolbox) and
+[py-feat](https://py-feat.org/). Because the rig activation is known
+frame by frame, each detector's output can be scored against a ground
+truth that a human-coded corpus does not provide.
 
-- code to run AFARtoolbox:
-AU_detection_MH_project/MATLAB Scripts/run_afar_v1.m
+The analyses ask three things of each detector: whether it detects the
+AU that was animated (binary classification performance), whether it
+detects it at the right time (temporal alignment), and whether the
+facial motion it responds to is in the right place (landmark
+displacement).
 
-- scripts to analyze AU detection tools' outputs: 
-AU_detection_MH_project/MATLAB Scripts/OpenFace_output_script.m
-AU_detection_MH_project/MATLAB Scripts/OFvsAFAR_output_and_plot.m
-AU_detection_MH_project/MATLAB Scripts/AFAR_output_script.m
-AU_detection_MH_project/MATLAB Scripts/creating_AU_mat_files.m
+Dependencies are managed with [uv](https://docs.astral.sh/uv/) and
+containers are built with [podman](https://podman.io/) and
+[Apptainer](https://apptainer.org/).
 
-- main analysis scripts: 
-Running Landmark Displacement Analysis:
-AU_detection_MH_project/MATLAB Scripts/rigid_inverse_affine_transformation.m
+## Repository layout
 
-Running Analysis for Spatial Correspondence with Expected Motion
-AU_detection_MH_project/MATLAB Scripts/active_vs_inactive_landm_ratio.m
+| Path | Contents |
+| --- | --- |
+| `au_detection_mh/` | The code the analyses call, installed as a package |
+| `analyses/` | Notebooks documenting the analyses, one per step |
+| `tests/` | `pytest` tests for the code in `au_detection_mh/` |
+| `ds-au_detection_mh/` | The dataset and its derivatives, with the rules on what may be committed |
+| `matlab/` | MATLAB sources that ran the detectors and produced the data |
+| `unreal/` | Unreal Engine 5 Python scripts that built the animations |
+| `myst.yml` | The book's table of contents and configuration |
+| `api.md` | The API reference page, which links to the pdoc output |
+| `generate_images.sh` | Generates and builds the container definitions |
+| `build_book.sh` | Builds the book and the API reference |
+| `.github/workflows/` | Spelling, formatting, test, container and book CI |
 
-- main analysis jupyter-notebook walkthrough: 
-analyses_and_figures_no-posthocs_script.ipynb
+The four avatars (`Ada`, `Garry`, `Cooper`, `Pia`) are Unreal Engine
+MetaHuman presets, not people, and the dataset contains no human
+participant data.
 
-- Required libraries and Python Version:
-Python version = 3.10.12
-jupyter==1.0.0
-ipykernel==6.29.0
-jupyter-book==0.15.1
-matplotlib==3.8.2
-plotly==5.18.0
-seaborn==0.11.0
-numpy==1.26.3
-scipy==1.12.0
-pandas==2.2.0
-scikit-learn==1.4.0
-pingouin==0.5.4
-statsmodels==0.14.1
+## Setting up the environment
 
+The environment is described by `pyproject.toml` and pinned by
+`uv.lock`. Both are committed, so the versions an analysis ran with are
+recoverable from the repository.
 
+Install uv, if it is not present already:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Create the environment and install the package into it:
+
+```bash
+uv sync
+```
+
+`uv sync` reads `.python-version` for the interpreter, installs the
+locked dependencies, adds the `dev` dependency group with the formatting
+and test tooling, and installs `au_detection_mh` in editable mode. Add
+`--extra notebooks` for Jupyter Lab, the kernel, and the plotting and
+hypothesis-testing packages the notebooks use.
+
+Run anything inside that environment with `uv run`:
+
+```bash
+uv run python -c "import au_detection_mh"
+uv run jupyter lab
+```
+
+### Changing dependencies
+
+```bash
+uv add numpy           # add a runtime dependency
+uv add --dev pytest    # add a development dependency
+uv remove numpy        # drop one
+uv lock --upgrade      # re-resolve within the declared bounds
+```
+
+Each of these rewrites `uv.lock`. Commit `pyproject.toml` and `uv.lock`
+in the same commit, since CI installs with `--frozen` and fails when the
+two disagree.
+
+## Running the analyses
+
+The notebooks in `analyses/` are numbered in the order they run.
+`01_classification_metrics.ipynb` writes the tables the other three
+read, so run it first in a fresh checkout; the tables it writes are also
+committed, so the later notebooks run without it.
+
+```bash
+uv sync --extra notebooks
+uv run jupyter lab
+```
+
+The steps that produced the dataset in the first place — the Unreal
+Engine animations and the three detector runs — are in `unreal/` and
+`matlab/`, need MATLAB and Unreal Engine, and are documented in the
+README in each of those directories.
+
+## Data
+
+`ds-au_detection_mh/` carries the dataset: the rig ground truth and the
+three detectors' predictions under `sourcedata/`, and the landmark
+displacement traces and group-level results under `derivatives/`.
+Everything published comes to roughly 5 MB and is committed directly.
+The rendered animation videos are not committed and are reproducible
+from `unreal/UE5_SequencerScripting.py`.
+
+Two questions decide whether a given file belongs there in version
+control, and a file has to pass both: it has to be small enough for git,
+and it has to be free of identifying information.
+`ds-au_detection_mh/README.md` gives the thresholds, the list of things
+to check for, and where the information hides outside the top-level
+columns of a table.
+
+Check before committing rather than afterwards. A push is public, and
+removing a file in a later commit leaves it in the history.
+
+## Running the checks
+
+The workflows in `.github/workflows/` run these three commands. Run them
+locally before committing:
+
+```bash
+uv run codespell
+uv run flake8 au_detection_mh/ tests/ unreal/
+uv run pytest
+bash build_book.sh
+```
+
+The book build is the one that needs something uv cannot install: see
+[](#documentation) below.
+
+(documentation)=
+## Documentation
+
+The notebooks in `analyses/`, the per-directory READMEs and this file
+are built into a [Jupyter Book](https://jupyterbook.org/) by
+`build_book.sh`. `myst.yml` holds the table of contents and the
+configuration.
+
+```bash
+bash build_book.sh
+```
+
+That writes the book to `_build/html/` and the API reference to
+`_build/html/api/`, and is the same script the book workflow runs, so
+what CI publishes is what a local build produces.
+
+Notebook execution is off. MyST inserts the outputs already stored in
+each `.ipynb` rather than re-running it, which is what these analyses
+need: the notebooks are committed with their outputs, and re-running
+them reads the dataset and takes minutes. To re-run them instead:
+
+```bash
+bash build_book.sh execute
+```
+
+### Node
+
+Jupyter Book 2 runs on MyST, which is a Node application, so **Node 18
+or newer has to be on `PATH`**. `uv` cannot supply it, which makes this
+the one check that does not run from a bare `uv sync`. `build_book.sh`
+checks the version first and says so rather than failing part-way
+through.
+
+Where the system Node is older, the `docs` extra already carries
+`nodeenv`, which fetches a Node into the project environment and so
+leaves the system one alone:
+
+```bash
+uv run --extra docs nodeenv --node=22.11.0 .venv/nodeenv
+export PATH="$PWD/.venv/nodeenv/bin:$PATH"
+bash build_book.sh
+```
+
+`--extra docs` matters: `uv run` syncs the environment to the extras it
+is given, so a bare `uv run nodeenv` can remove the very tool it is
+asked to run. `.venv/` is git-ignored, so that Node is not committed.
+
+### The API reference
+
+Jupyter Book 2 does not generate API documentation from Python
+docstrings, so [pdoc](https://pdoc.dev/) renders `au_detection_mh`
+separately into `_build/html/api/` and `api.md` links to it. Both steps
+run from `build_book.sh`.
+
+### Published book
+
+The book workflow builds on every push and pull request, and publishes
+to GitHub Pages from `main`. It needs Pages switched on with the source
+set to GitHub Actions. The site then appears at
+`https://peerherholz.github.io/AU_detection_MH_project/`.
+
+The first build in a fresh environment spends about ten minutes
+installing the site template's web libraries; later builds take about
+fifteen seconds. The workflow caches those libraries so only its first
+run pays that cost.
+
+## Containers
+
+`generate_images.sh` writes the container definitions with
+[neurodocker](https://github.com/ReproNim/neurodocker), which it runs
+through `uvx`, so generating them needs no container runtime. Inside the
+images, `uv sync --frozen` installs the versions from `uv.lock`, which
+has to be committed before an image can be built.
+
+The images carry the Python analyses. They do not carry MATLAB or Unreal
+Engine, so the steps in `matlab/` and `unreal/` cannot be re-run inside
+them; those directories are copied in so that the record of how the data
+was produced travels with the image.
+
+Generate both definitions:
+
+```bash
+bash generate_images.sh both
+```
+
+Generate and build both images:
+
+```bash
+bash generate_images.sh both local
+```
+
+`Dockerfile` is built with `podman`, which runs rootless and needs no
+daemon. `Singularity.def` is built with `apptainer build --fakeroot`,
+which also needs no daemon. Both require an `/etc/subuid` and
+`/etc/subgid` entry for your user.
+
+Set `APPTAINER_TMPDIR` and `APPTAINER_CACHEDIR` to local scratch before
+building the `.sif`, or apptainer will place several GB of intermediates
+under `/tmp` and `$HOME`:
+
+```bash
+export APPTAINER_TMPDIR=/raid/$USER/apptainer-tmp
+export APPTAINER_CACHEDIR=/raid/$USER/apptainer-cache
+```
+
+### Running the containers
+
+The OCI image starts Jupyter Lab on port 8888:
+
+```bash
+podman run --rm -p 8888:8888 au_detection_mh:local
+```
+
+Mount the dataset to work on data that is kept outside the image. `:Z`
+relabels the mount for SELinux and is harmless where SELinux is not
+enforced:
+
+```bash
+podman run --rm -p 8888:8888 \
+    -v /path/to/ds-au_detection_mh:/home/au_detection_mh/ds-au_detection_mh:Z \
+    au_detection_mh:local
+```
+
+If podman reports that it `could not find slirp4netns`, the container is
+left with no network interface beyond loopback, and `-p` publishes
+nothing. Rootless podman needs `slirp4netns` or `pasta` to give a
+container its own network namespace. Where neither is installed, share
+the host network instead, which puts Jupyter on port 8888 of the host
+directly:
+
+```bash
+podman run --rm --network=host au_detection_mh:local
+```
+
+`podman build` is unaffected, because it runs its steps in the host
+network namespace already.
+
+The Apptainer image bind-mounts `$HOME` and the current directory
+already, and takes the command to run:
+
+```bash
+apptainer run au_detection_mh.sif jupyter lab --no-browser --ip=0.0.0.0
+apptainer exec au_detection_mh.sif pytest
+```
+
+### Published images
+
+The container workflow builds the image on every push and pull request,
+and publishes it to Docker Hub and the GitHub Container Registry on
+pushes to `main` and on `v*` tags. The lab's namespace is spelled
+differently on the two: `vccn-lab` on ghcr.io, `vccnlab` on Docker Hub.
+A tag push publishes the version number, so pull by that tag rather
+than by `latest`:
+
+```bash
+podman pull ghcr.io/vccn-lab/au_detection_mh:1.2.3
+podman pull vccnlab/au_detection_mh:1.2.3
+```
+
+The ghcr.io push authenticates with the `GITHUB_TOKEN` the workflow
+already has. The Docker Hub push needs the `DOCKERHUB_USERNAME` and
+`DOCKERHUB_TOKEN` secrets set on the repository, and fails without
+them.
+
+The `.sif` is not published by CI. Push one from a local build with:
+
+```bash
+REGISTRY_OWNER=vccn-lab IMAGE_TAG=1.2.3 \
+    bash generate_images.sh singularity local push
+```
+
+That stores it as an OCI artifact, so it is retrieved with
+`apptainer pull oras://...` rather than with `podman pull`.
+
+## License
+
+See [LICENSE](LICENSE).

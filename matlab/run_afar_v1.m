@@ -10,25 +10,29 @@ close all;
 % OpenCV 3.4.1
 
 
-% add mexopencv and opencv compiled dependencies to matlab environment
-addpath(genpath('C:\dev'));
-afarPath= 'C:\Users\hilal\Desktop\JLU-Dobs\AFARtoolbox-mesh_visualization';
+%% Paths
+% Set these three to the local installs and to the videos to process.
+% None of them are in this repository: the AFAR toolbox and the
+% compiled mexopencv dependencies are installed separately, and the
+% rendered animation videos are regenerated from
+% ../unreal/UE5_SequencerScripting.py.  See README.md.
+
+% mexopencv and opencv compiled dependencies
+opencvPath= '';
+addpath(genpath(opencvPath));
+
+% AFAR toolbox checkout, mesh_visualization branch
+afarPath= '';
 
 % add paths to different modules that constitute AFAR
 zface_dir = [afarPath '\zface\'];
 FETA_dir  = [afarPath '\FETA\'];
 AU_dir    = [afarPath '\AU_detector\'];
 
-% Your directory of videos that need to be processed and where they should be saved
-%video_dir = 'C:\Users\hilal\Desktop\JLU-Dobs\MetaHuman Recordings\UnrealEngine_Animations\Pia';
-video_dir = 'C:\Users\hilal\Desktop\temp';
-out_dir   = 'C:\Users\hilal\Desktop\JLU-Dobs\MetaHuman Recordings\UnrealEngine_Animations\Pia\AFAR_output';
-
-%video_dir = 'C:\Users\hilal\Desktop\JLU-Dobs\AFARtoolbox-mesh_visualization\example\test_video';
-%out_dir   = 'C:\Users\hilal\Desktop\JLU-Dobs\AFARtoolbox-mesh_visualization\example\test_out';
-
-%video_dir = 'C:\Users\hilal\Desktop\JLU-Dobs\MetaHuman Recordings\Trimmed Videos\Lena';
-%out_dir   = 'C:\Users\hilal\Desktop\JLU-Dobs\MetaHuman Recordings\Trimmed Videos\Lena\AFARtoolbox_output';
+% Directory of videos to process, one avatar at a time, and where the
+% AFAR output for them should be written
+video_dir = '';
+out_dir   = '';
 
 % What modules need to be run on the videos
 run_zface = true; 
