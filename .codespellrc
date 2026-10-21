@@ -1,5 +1,5 @@
 [codespell]
-skip = ./.git,./uv.lock,./*.ipynb,./*.egg-info,./build,./dist,./.venv,./ds-au_detection_mh
+skip = ./.git,./uv.lock,./*.ipynb,./*.egg-info,./build,./_build,./dist,./.venv,./ds-au_detection_mh
 # Terms that appear in docstrings, comments and column headers and are
 # meant as written: FPR is the false positive rate, TPR the true
 # positive rate, and nd appears in "nd array".

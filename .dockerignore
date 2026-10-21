@@ -25,6 +25,10 @@ dist
 .mypy_cache
 .ipynb_checkpoints
 
+# The built book and its API reference, which the book workflow
+# produces and publishes to Pages rather than shipping in the image
+_build
+
 # Container definitions and images: the Dockerfile is the build input and
 # the images are outputs, so neither belongs inside the image
 Dockerfile

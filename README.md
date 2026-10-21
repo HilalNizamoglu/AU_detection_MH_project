@@ -31,8 +31,11 @@ containers are built with [podman](https://podman.io/) and
 | `ds-au_detection_mh/` | The dataset and its derivatives, with the rules on what may be committed |
 | `matlab/` | MATLAB sources that ran the detectors and produced the data |
 | `unreal/` | Unreal Engine 5 Python scripts that built the animations |
+| `myst.yml` | The book's table of contents and configuration |
+| `api.md` | The API reference page, which links to the pdoc output |
 | `generate_images.sh` | Generates and builds the container definitions |
-| `.github/workflows/` | Spelling, formatting, test and container CI |
+| `build_book.sh` | Builds the book and the API reference |
+| `.github/workflows/` | Spelling, formatting, test, container and book CI |
 
 The four avatars (`Ada`, `Garry`, `Cooper`, `Pia`) are Unreal Engine
 MetaHuman presets, not people, and the dataset contains no human
@@ -127,7 +130,77 @@ locally before committing:
 uv run codespell
 uv run flake8 au_detection_mh/ tests/ unreal/
 uv run pytest
+bash build_book.sh
 ```
+
+The book build is the one that needs something uv cannot install: see
+[](#documentation) below.
+
+(documentation)=
+## Documentation
+
+The notebooks in `analyzes/`, the per-directory READMEs and this file
+are built into a [Jupyter Book](https://jupyterbook.org/) by
+`build_book.sh`. `myst.yml` holds the table of contents and the
+configuration.
+
+```bash
+bash build_book.sh
+```
+
+That writes the book to `_build/html/` and the API reference to
+`_build/html/api/`, and is the same script the book workflow runs, so
+what CI publishes is what a local build produces.
+
+Notebook execution is off. MyST inserts the outputs already stored in
+each `.ipynb` rather than re-running it, which is what these analyses
+need: the notebooks are committed with their outputs, and re-running
+them reads the dataset and takes minutes. To re-run them instead:
+
+```bash
+bash build_book.sh execute
+```
+
+### Node
+
+Jupyter Book 2 runs on MyST, which is a Node application, so **Node 18
+or newer has to be on `PATH`**. `uv` cannot supply it, which makes this
+the one check that does not run from a bare `uv sync`. `build_book.sh`
+checks the version first and says so rather than failing part-way
+through.
+
+Where the system Node is older, the `docs` extra already carries
+`nodeenv`, which fetches a Node into the project environment and so
+leaves the system one alone:
+
+```bash
+uv run --extra docs nodeenv --node=22.11.0 .venv/nodeenv
+export PATH="$PWD/.venv/nodeenv/bin:$PATH"
+bash build_book.sh
+```
+
+`--extra docs` matters: `uv run` syncs the environment to the extras it
+is given, so a bare `uv run nodeenv` can remove the very tool it is
+asked to run. `.venv/` is git-ignored, so that Node is not committed.
+
+### The API reference
+
+Jupyter Book 2 does not generate API documentation from Python
+docstrings, so [pdoc](https://pdoc.dev/) renders `au_detection_mh`
+separately into `_build/html/api/` and `api.md` links to it. Both steps
+run from `build_book.sh`.
+
+### Published book
+
+The book workflow builds on every push and pull request, and publishes
+to GitHub Pages from `main`. It needs Pages switched on with the source
+set to GitHub Actions. The site then appears at
+`https://peerherholz.github.io/AU_detection_MH_project/`.
+
+The first build in a fresh environment spends about ten minutes
+installing the site template's web libraries; later builds take about
+fifteen seconds. The workflow caches those libraries so only its first
+run pays that cost.
 
 ## Containers
 

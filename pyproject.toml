@@ -70,6 +70,14 @@ notebooks = [
     "statsmodels>=0.14",
     "scikit-posthocs>=0.9",
 ]
+# The book build.  jupyter-book 2 drives MyST, which is a Node
+# application, so a Node of at least 18 has to be on PATH as well; uv
+# cannot supply it.  pdoc renders the package docstrings, because
+# Jupyter Book 2 does not generate API documentation from them.
+docs = [
+    "jupyter-book>=2.1.7",
+    "pdoc>=16.0.0",
+]
 
 # The same sets are declared as dependency groups, which "uv run" and
 # "uv sync" install without a flag, while extras are installed only when
@@ -78,6 +86,7 @@ notebooks = [
 [dependency-groups]
 dev = ["au_detection_mh[dev]"]
 notebooks = ["au_detection_mh[notebooks]"]
+docs = ["au_detection_mh[docs]"]
 
 [project.urls]
 Homepage = "https://github.com/PeerHerholz/AU_detection_MH_project"
