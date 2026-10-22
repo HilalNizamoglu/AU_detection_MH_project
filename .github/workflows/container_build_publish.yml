@@ -4,6 +4,11 @@ name: Build and Publish Container
 # Images are built on every push and PR so that a broken Dockerfile is
 # caught early, and pushed to the registries only from main and from tags
 on:
+  # Lets the workflow be started by hand from the Actions tab, on any
+  # branch, without needing a push or a pull request.  Useful for
+  # re-running after a repository setting changes, such as switching on
+  # Pages or adding a registry credential.
+  workflow_dispatch:
   push:
     branches: [main]
     tags: ["v*"]
@@ -24,6 +29,13 @@ jobs:
       # build only, so that a broken Dockerfile is caught before merge
       # without a fork being able to push to the registries.
       PUBLISH: ${{ github.event_name == 'push' }}
+      # Docker Hub is published to only when a credential is configured.
+      # Surfacing the secret into the environment is what lets the steps
+      # below test for it: secrets cannot be referenced from an "if"
+      # directly. An empty value means the registry is skipped rather
+      # than the job failing, which is what happened when this ran
+      # without the secrets set.
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
 
     steps:
       - name: Checkout code
@@ -54,16 +66,35 @@ jobs:
       # v1.2.3 publishes 1.2.3, 1.2 and latest, while a push to main
       # publishes main and the commit sha. Every image therefore carries
       # a tag that names a specific version rather than only "latest".
+      # Image names have to be all lower-case. The lab's namespace is
+      # spelled differently on the two registries: vccn-lab on the
+      # GitHub Container Registry, vccnlab on Docker Hub. The list is
+      # assembled here rather than inline so that a missing Docker Hub
+      # credential drops the line entirely instead of leaving a blank
+      # one for the metadata action to parse.
+      - name: Collect the image names
+        id: images
+        run: |
+          {
+            echo 'names<<IMAGES'
+            echo 'ghcr.io/vccn-lab/au_detection_mh'
+            if [ -n "$DOCKERHUB_USERNAME" ]; then
+              echo 'vccnlab/au_detection_mh'
+            else
+              echo 'Note: DOCKERHUB_USERNAME is unset,' \
+                   'so Docker Hub is skipped.' >&2
+            fi
+            echo 'IMAGES'
+          } >> "$GITHUB_OUTPUT"
+
+      # Derive the image tags from the git ref: a semver tag such as
+      # v1.2.3 publishes 1.2.3, 1.2 and latest, while a push to main
+      # publishes main and the commit sha.
       - name: Collect image metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          # Image names have to be all lower-case. The lab's namespace
-          # is spelled differently on the two registries: vccn-lab on
-          # the GitHub Container Registry, vccnlab on Docker Hub.
-          images: |
-            ghcr.io/vccn-lab/au_detection_mh
-            vccnlab/au_detection_mh
+          images: ${{ steps.images.outputs.names }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
@@ -73,7 +104,7 @@ jobs:
             latest=${{ startsWith(github.ref, 'refs/tags/v') }}
 
       - name: Login to DockerHub
-        if: env.PUBLISH == 'true'
+        if: env.PUBLISH == 'true' && env.DOCKERHUB_USERNAME != ''
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -87,7 +118,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build image and push to Docker Hub and GitHub Container Registry
+      - name: Build image and push to the configured registries
         id: docker_build
         uses: docker/build-push-action@v6
         with:
