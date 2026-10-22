@@ -27,6 +27,6 @@ Each notebook also writes its figures as `.svg` next to the tables in
 `../ds-au_detection_mh/derivatives/au-detection-metrics/`. Those files
 are not committed, so a run leaves them untracked.
 
-`analyses_and_figures_no-posthocs_script.ipynb` is the original
+`analyses_and_figures_script_all.ipynb` is the original
 single-notebook walkthrough the four above were derived from, kept for
 reference with its executed output intact.
